@@ -6,14 +6,14 @@
 //
 
 import CoreText
-import SwiftUI
 import OSLog
+import SwiftUI
 
 public class TRSManager {
     public static let shared = TRSManager()
-    
-    private let logger = Logger(subsystem: "com.klinke-studio.trs-system", category: "TRSManager")
-    
+
+    private let logger = Logger(subsystem: "studio.klinke.trs-system", category: "TRSManager")
+
     public func installFonts() {
         if isFontInstalled(fontName: "Fira Code") {
             logger.info("Font already installed")
@@ -38,10 +38,12 @@ public class TRSManager {
         return fontNames.contains(fontName)
     }
 
-    private func downloadAndRegisterFont(from url: URL, fontName: String, completion: @escaping (Bool) -> Void) {
+    private func downloadAndRegisterFont(from url: URL, fontName: String,
+                                         completion: @escaping (Bool) -> Void) {
         let task = URLSession.shared.downloadTask(with: url) { localURL, response, error in
             guard let localURL, error == nil else {
-                self.logger.error("Failed to download font: \(error?.localizedDescription ?? "Unknown error")")
+                self.logger
+                    .error("Failed to download font: \(error?.localizedDescription ?? "Unknown error")")
                 completion(false)
                 return
             }
