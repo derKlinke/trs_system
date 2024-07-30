@@ -44,7 +44,7 @@ final class ColorSwatchSnapshotTests: XCTestCase {
         .padding()
 
         let hostingView = NSHostingView(rootView: preview)
-        hostingView.frame = CGRect(x: 0, y: 0, width: 1_200, height: 1_200)
+        hostingView.frame = CGRect(x: 0, y: 0, width: 1_200, height: 600)
 
         let snapshotImage = takeAndSaveSnapshot(of: hostingView, named: "system-colors")
 
