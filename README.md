@@ -6,6 +6,10 @@ In addition to colors based on the RAL color system, it also defines custom font
 
 In addition to a lot of style configuration, TRS SYSTEM also implements some custom UI elements, such as a custom List view that behaves similarly to a default List but is styled to integrate better into this design system.
 
+## Previews
+
+![Colors](/tests/trs-system-snapshot/snapshots/system-colors.png)
+
 ## License
 
 This code is open-sourced more as an example of how to do things and to inspire others to maybe also go the full crazy route and define their design system. However, I would ask you not to use it directly to keep the styling of my current and future applications unique.

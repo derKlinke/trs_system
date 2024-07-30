@@ -6,13 +6,16 @@ import PackageDescription
 let package = Package(
     name: "trs-system",
     platforms: [
-        .macOS(.v14)
+        .macOS(.v14),
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "trs-system",
             targets: ["trs-system"]),
+    ],
+    dependencies: [
+        
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -23,5 +26,9 @@ let package = Package(
                 .process("sound/audio_files"),
                 .process("styles/fonts/custom_fonts"),
             ]),
+        
+        .testTarget(
+            name: "trs-system-snapshot",
+            dependencies: ["trs-system"])
     ]
 )

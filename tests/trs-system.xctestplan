@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "7315C41B-70F0-4B4B-B1D8-E12EBFC614E4",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "trs-system-snapshot",
+        "name" : "trs-system-snapshot"
+      }
+    }
+  ],
+  "version" : 1
+}

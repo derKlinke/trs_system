@@ -28,16 +28,19 @@ public class TRSColorManager: ObservableObject {
     }
 
     public func getCurrentColorScheme() -> ColorScheme {
-        let appearance = NSApp.effectiveAppearance
-        if appearance.name == .darkAqua || appearance.name == .vibrantDark {
-            logger.debug("Dark mode enabled")
-            return .dark
+        if let app = NSApp {
+            let appearance = app.effectiveAppearance
+            if appearance.name == .darkAqua || appearance.name == .vibrantDark {
+                logger.debug("Dark mode enabled")
+                return .dark
+            } else {
+                logger.debug("Light mode enabled")
+                return .light
+            }
         } else {
-            logger.debug("Light mode enabled")
             return .light
         }
     }
-    
 }
 
 // MARK: - TRSColor
