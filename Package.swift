@@ -21,6 +21,7 @@ let package = Package(
             name: "trs-system",
             resources: [
                 .process("sound/audio_files"),
+                .process("styles/fonts/custom_fonts"),
             ]),
     ]
 )
