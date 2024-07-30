@@ -1,10 +1,3 @@
-//
-//  File.swift
-//
-//
-//  Created by Fabian S. Klinke on 2024-07-25.
-//
-
 import SwiftUI
 
 // MARK: - TRSFontName
@@ -32,6 +25,7 @@ public enum TRSFonts {
     case body
     case caption
     case mono
+    case numDisplay
 }
 
 // MARK: - TRSFontAlignment
@@ -47,6 +41,7 @@ let allFonts: [TRSFonts: TRSFontSpec] = [
     .headline: TRSFontSpec(name: .sansSerif, level: 0.3, bold: true, color: .headline),
     .title: TRSFontSpec(name: .sansSerif, level: 1, bold: true, color: .headline),
     .mono: TRSFontSpec(name: .monospace, level: 0, bold: false),
+    .numDisplay: TRSFontSpec(name: .monospace, level: 1, bold: true, color: .headline)
 ]
 
 // MARK: - TRSFontSpec

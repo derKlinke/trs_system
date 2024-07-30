@@ -14,7 +14,7 @@ public struct TRSList<Data, ID, Content>: View where Data: RandomAccessCollectio
     private var content: (Data.Element) -> Content
     private var selectionMode: TRSSelectionMode<ID>
     @State private var lastSelectedID: ID?
-    
+
     @StateObject private var colorManager = TRSColorManager.shared
 
     private init(data: Data, id: KeyPath<Data.Element, ID>, selectionMode: TRSSelectionMode<ID>,
@@ -48,10 +48,10 @@ public struct TRSList<Data, ID, Content>: View where Data: RandomAccessCollectio
                 LazyVStack(spacing: 0) {
                     ForEach(data, id: id) { item in
                         content(item)
-                            .padding(trs: .tiny)
+                            .padding(.tiny)
                             .background(isSelected(item) ? DynamicTRSColor.highlightedContentBackground
                                 .color : Color.clear)
-                            .roundedClip(level: -2)
+                            .roundedClip(.tiny)
                             .padding(.vertical, 1)
                             .contentShape(Rectangle())
                             .onTapGesture {
@@ -63,8 +63,16 @@ public struct TRSList<Data, ID, Content>: View where Data: RandomAccessCollectio
             .onTapGesture {
                 clearSelection()
             }
+            .focusable()
+            .focusEffectDisabled()
+            .onCommand(#selector(NSStandardKeyBindingResponding.selectAll(_:))) {
+                selectAllItems()
+            }
+            .onCommand(#selector(NSStandardKeyBindingResponding.cancelOperation(_:))) {
+                clearSelection()
+            }
             .scrollContentBackground(.hidden)
-            .padding(trs: .medium, edges: .top)
+            .padding(.top, .medium)
         }
     }
 
@@ -92,6 +100,15 @@ public struct TRSList<Data, ID, Content>: View where Data: RandomAccessCollectio
                 binding.wrappedValue.insert(itemID)
             }
             lastSelectedID = itemID
+        }
+    }
+
+    private func selectAllItems() {
+        switch selectionMode {
+        case let .multiple(binding):
+            binding.wrappedValue = Set(data.map { $0[keyPath: id] })
+        default:
+            break
         }
     }
 

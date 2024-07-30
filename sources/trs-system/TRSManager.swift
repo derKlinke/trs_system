@@ -1,10 +1,3 @@
-//
-//  TRSManager.swift
-//
-//
-//  Created by Fabian S. Klinke on 2024-07-25.
-//
-
 import CoreText
 import OSLog
 import SwiftUI

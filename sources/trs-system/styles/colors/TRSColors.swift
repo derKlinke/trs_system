@@ -1,10 +1,3 @@
-//
-//  TRSColors.swift
-//
-//
-//  Created by Fabian S. Klinke on 2024-07-25.
-//
-
 import SwiftUI
 import OSLog
 import Combine
@@ -87,6 +80,28 @@ public struct TRSColor: Equatable {
     public func opacity(_ opacity: CGFloat = BASE_OPACITY) -> Self {
         TRSColor(name: self.name, ral: self.ral, hex: self.hex, opacity: opacity)
     }
+    
+    public func blend(with color: TRSColor, ratio: Double = 0.5) -> Self {
+        // convert underlying colors to NSColor and use built in blend function
+        let nsColor = NSColor(red: CGFloat(rgba.red), green: CGFloat(rgba.green), blue: CGFloat(rgba.blue), alpha: CGFloat(rgba.alpha))
+        let nsColor2 = NSColor(red: CGFloat(color.rgba.red), green: CGFloat(color.rgba.green), blue: CGFloat(color.rgba.blue), alpha: CGFloat(color.rgba.alpha))
+        let blendedColor = nsColor.blended(withFraction: CGFloat(ratio), of: nsColor2)
+        
+        // convert back to rgba
+        let red = Double(blendedColor!.redComponent)
+        let green = Double(blendedColor!.greenComponent)
+        let blue = Double(blendedColor!.blueComponent)
+        let alpha = Double(blendedColor!.alphaComponent)
+        
+        // convert to hex
+        let hex = UInt(red * 255) << 16 + UInt(green * 255) << 8 + UInt(blue * 255)
+        
+        return TRSColor(name: "\(self.name) x \(color.name)", ral: "n/a", hex: hex, opacity: CGFloat(alpha))
+    }
+    
+    public func blend(with color: TRSColors, ratio: Double = 0.5) -> Self {
+        self.blend(with: color.trsColor, ratio: ratio)
+    }
 }
 
 // MARK: - TRSColors
@@ -102,6 +117,8 @@ enum TRSBaseColorDefinitions {
     public static let green = TRSColor(name: "GREEN", ral: "RAL 6011", hex: 0x708C64)
     public static let blue = TRSColor(name: "BLUE", ral: "RAL 5012", hex: 0x0C6BA7)
     public static let yellow = TRSColor(name: "YELLOW", ral: "RAL 1021", hex: 0xF3C100)
+    
+    public static let none = TRSColor(name: "NONE", ral: "n/a", hex: 0x000000, opacity: 0.0)
     
     public static let shadow = text.opacity(0.1)
 }
@@ -162,7 +179,11 @@ public enum DynamicTRSColor: String, CaseIterable, Identifiable, CustomStringCon
     case contentBackground
     case secondaryContentBackground
     case highlightedContentBackground
+    case separator
+    case uiElement
     case shadow
+    
+    case clear
     
     private var _darkModeColor: TRSColor {
         switch self {
@@ -177,7 +198,10 @@ public enum DynamicTRSColor: String, CaseIterable, Identifiable, CustomStringCon
         case .contentBackground: return TRSBaseColorDefinitions.text
         case .secondaryContentBackground: return TRSBaseColorDefinitions.text.opacity(0.8)
         case .highlightedContentBackground: return TRSBaseColorDefinitions.primary.opacity(0.5)
-        case .shadow: return TRSBaseColorDefinitions.primary.opacity(0.7)
+        case .separator: return TRSBaseColorDefinitions.text.opacity(0.1)
+        case .uiElement: return TRSBaseColorDefinitions.ground.opacity(0.3)
+        case .shadow: return TRSBaseColorDefinitions.primary
+        case .clear: return TRSBaseColorDefinitions.none
         }
     }
     
@@ -192,9 +216,12 @@ public enum DynamicTRSColor: String, CaseIterable, Identifiable, CustomStringCon
         case .error: return TRSBaseColorDefinitions.red.opacity()
             
         case .contentBackground: return TRSBaseColorDefinitions.white
-        case .secondaryContentBackground: return TRSBaseColorDefinitions.white.opacity(0.8)
+        case .secondaryContentBackground: return TRSBaseColorDefinitions.ground.blend(with: .white, ratio: 0.8)
         case .highlightedContentBackground: return TRSBaseColorDefinitions.accent.opacity(0.5)
-        case .shadow: return TRSBaseColorDefinitions.text.opacity(0.05)
+        case .separator: return TRSBaseColorDefinitions.accent.blend(with: .white)
+        case .uiElement: return TRSBaseColorDefinitions.text.opacity(0.3)
+        case .shadow: return TRSBaseColorDefinitions.text.opacity(0.2)
+        case .clear: return TRSBaseColorDefinitions.none
         }
     }
     
@@ -248,12 +275,12 @@ public struct ColorSwatch: View {
                 Text(color.hexString)
                     .font(trs: .caption)
             }
-            .padding(trs: .small)
+            .padding(.small)
             .frame(maxWidth: .infinity)
             .background { Color(trs: .white) }
         }
         .frame(width: 120)
-        .roundedClip(level: 0)
+        .roundedClip()
         .shadow(color: Color(trs: .shadow), radius: 5, x: 1, y: 1)
     }
 }
@@ -266,7 +293,7 @@ public struct ColorSwatch: View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]) {
             ForEach(TRSColors.allCases) { color in
                 ColorSwatch(color)
-                    .padding(trs: .medium)
+                    .padding(.medium)
             }
         }
         .frame(maxWidth: 400)
