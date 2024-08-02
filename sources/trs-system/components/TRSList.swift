@@ -4,6 +4,7 @@ import SwiftUI
 public enum TRSSelectionMode<ID: Hashable> {
     case single(Binding<ID?>)
     case multiple(Binding<Set<ID>>)
+    case none
 }
 
 // MARK: - TRSList
@@ -33,6 +34,10 @@ public struct TRSList<Data, ID, Content>: View where Data: RandomAccessCollectio
     public init(data: Data, id: KeyPath<Data.Element, ID>, multipleSelection: Binding<Set<ID>>,
                 @ViewBuilder content: @escaping (Data.Element) -> Content) {
         self.init(data: data, id: id, selectionMode: .multiple(multipleSelection), content: content)
+    }
+    
+    public init(data: Data, id: KeyPath<Data.Element, ID>, @ViewBuilder content: @escaping (Data.Element) -> Content) {
+        self.init(data: data, id: id, selectionMode: .none, content: content)
     }
 
     public var body: some View {
@@ -100,6 +105,8 @@ public struct TRSList<Data, ID, Content>: View where Data: RandomAccessCollectio
                 binding.wrappedValue.insert(itemID)
             }
             lastSelectedID = itemID
+        default:
+            break
         }
     }
 
@@ -118,6 +125,8 @@ public struct TRSList<Data, ID, Content>: View where Data: RandomAccessCollectio
             binding.wrappedValue = nil
         case let .multiple(binding):
             binding.wrappedValue.removeAll()
+        default:
+            break
         }
     }
 
@@ -127,6 +136,8 @@ public struct TRSList<Data, ID, Content>: View where Data: RandomAccessCollectio
             return binding.wrappedValue == item[keyPath: id]
         case let .multiple(binding):
             return binding.wrappedValue.contains(item[keyPath: id])
+        default:
+            return false
         }
     }
 }
