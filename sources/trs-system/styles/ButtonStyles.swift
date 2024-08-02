@@ -57,3 +57,51 @@ public struct TRSTextFieldStyle: TextFieldStyle {
             .borderClip(.tiny)
     }
 }
+
+// MARK: - TRSToggleStyle
+public struct TRSToggleStyle: ToggleStyle {
+    @StateObject var colorManager = TRSColorManager.shared
+    @State private var isPressed = false  // Make sure to mark as private for encapsulation
+
+    public init() {}
+
+    private let toggleFontSpec = TRSFontSpec(name: .sansSerif, level: -1, bold: true)
+
+    public func makeBody(configuration: Configuration) -> some View {
+        HStack {
+            ZStack {
+                Rectangle()
+                    .fill(configuration.isOn ? DynamicTRSColor.text.color : DynamicTRSColor.contentBackground.color)
+
+                if configuration.isOn {
+                    Image(systemName: "checkmark")
+                        .foregroundColor(DynamicTRSColor.contentBackground.color)
+                        .withFontSpec(toggleFontSpec)
+                }
+            }
+            .frame(square: .medium)
+            .borderClip(.tiny)
+            .scaleEffect(isPressed ? 0.95 : 1.0)
+            .animation(.spring(duration: 0.1), value: isPressed)
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in
+                        // Triggered when the gesture starts
+                        if !isPressed {
+                            isPressed = true
+                        }
+                    }
+                    .onEnded { _ in
+                        // Triggered when the gesture ends
+                        if isPressed {
+                            isPressed = false
+                            configuration.isOn.toggle()  // Toggle the state on release
+                        }
+                    }
+            )
+
+            configuration.label
+                .font(trs: .body)
+        }
+    }
+}
