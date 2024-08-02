@@ -131,6 +131,11 @@ extension View {
             fatalError("Font not found")
         }
     }
+    
+    func withFontSpec(_ spec: TRSFontSpec, padding: Bool = true, color: TRSColors? = nil,
+                      alignment: TRSFontAlignment = .center) -> some View {
+        return self.modifier(TRSFontSpecViewModifier(spec: spec, padding: padding, color: color, alignment: alignment))
+    }
 }
 
 #Preview {
