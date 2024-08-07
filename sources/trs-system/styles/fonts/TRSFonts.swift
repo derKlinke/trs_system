@@ -5,6 +5,7 @@ public enum TRSFontName: String {
     case sansSerif = "Helvetica Neue"
     case serif = "Hoefler Text"
     case monospace = "Fira Code"
+    case system = "System"
 
     var baseFontSize: CGFloat {
         switch self {
@@ -14,6 +15,8 @@ public enum TRSFontName: String {
             BASE_SIZE
         case .monospace:
             BASE_SIZE - 2
+        case .system:
+            BASE_SIZE
         }
     }
 }
@@ -37,11 +40,11 @@ public enum TRSFontAlignment {
 
 let allFonts: [TRSFonts: TRSFontSpec] = [
     .caption: TRSFontSpec(name: .monospace, level: -1, bold: false, color: .secondaryText),
-    .body: TRSFontSpec(name: .sansSerif, level: 0, bold: false),
-    .headline: TRSFontSpec(name: .sansSerif, level: 0.3, bold: true, color: .headline),
-    .title: TRSFontSpec(name: .sansSerif, level: 1, bold: true, color: .headline),
+    .body: TRSFontSpec(name: .system, level: 0, bold: false),
+    .headline: TRSFontSpec(name: .system, level: 0.3, bold: true, color: .headline),
+    .title: TRSFontSpec(name: .system, level: 1, bold: true, color: .headline),
     .mono: TRSFontSpec(name: .monospace, level: 0, bold: false),
-    .numDisplay: TRSFontSpec(name: .monospace, level: 1, bold: true, color: .headline)
+    .numDisplay: TRSFontSpec(name: .monospace, level: 1, bold: true, color: .headline),
 ]
 
 // MARK: - TRSFontSpec
@@ -71,34 +74,52 @@ struct TRSFontSpecViewModifier: ViewModifier {
     var topPadding = 0.0
     var bottomPadding = 0.0
 
+    var font: Font?
+
     init(spec: TRSFontSpec, padding: Bool, color: TRSColors?, alignment: TRSFontAlignment) {
         self.spec = spec
         self.alignment = alignment
-        
+
+        // Initialize color property
         if let color {
             self.color = color.color
         } else {
             self.color = spec.color.color
         }
 
-        guard let font = NSFont(name: spec.name.rawValue, size: fontSize(level: spec.level)) else {
-            fatalError("Font not found")
+        // Temporary variables to hold intermediate values
+        let fontSizeLevel = fontSize(level: spec.level)
+        let font: NSFont
+
+        // Initialize font property
+        if spec.name == .system {
+            self.font = Font.system(size: fontSizeLevel)
+            font = NSFont.systemFont(ofSize: fontSizeLevel)
+        } else {
+            self.font = Font.custom(spec.name.rawValue, size: fontSizeLevel)
+            guard let customFont = NSFont(name: spec.name.rawValue, size: fontSizeLevel) else {
+                fatalError("Font not found")
+            }
+            font = customFont
         }
 
-        self.desiredLineHeight = fontSize(level: spec.level) * GOLDEN_RATIO
+        // Calculate derived properties
+        self.desiredLineHeight = fontSizeLevel * GOLDEN_RATIO
         self.pointFontSize = font.pointSize
-        self.linespacing = desiredLineHeight - pointFontSize
+        self.linespacing = self.desiredLineHeight - self.pointFontSize
 
         if padding {
-            topPadding = (linespacing / 3) * 2
-            bottomPadding = linespacing / 3
+            self.topPadding = (self.linespacing / 3) * 2
+            self.bottomPadding = self.linespacing / 3
+        } else {
+            self.topPadding = 0.0
+            self.bottomPadding = 0.0
         }
-
     }
 
     func body(content: Content) -> some View {
         _applyAlignment(content
-            .font(.custom(spec.name.rawValue, size: fontSize(level: spec.level)))
+            .font(self.font!)
             .bold(spec.bold)
             .lineSpacing(linespacing)
             .foregroundColor(color))
@@ -131,10 +152,11 @@ extension View {
             fatalError("Font not found")
         }
     }
-    
+
     func withFontSpec(_ spec: TRSFontSpec, padding: Bool = true, color: TRSColors? = nil,
                       alignment: TRSFontAlignment = .center) -> some View {
-        return self.modifier(TRSFontSpecViewModifier(spec: spec, padding: padding, color: color, alignment: alignment))
+        self.modifier(TRSFontSpecViewModifier(spec: spec, padding: padding, color: color,
+                                              alignment: alignment))
     }
 }
 
