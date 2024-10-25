@@ -4,7 +4,6 @@ import SwiftUI
 class CALineGraphLayer: CALayer {
     var dataPoints: [Float] = [] {
         didSet {
-            updateGlobalMinMax()
             setNeedsDisplay()
         }
     }
@@ -21,18 +20,6 @@ class CALineGraphLayer: CALayer {
         }
     }
 
-    private var globalMinY = Float.greatestFiniteMagnitude
-    private var globalMaxY: Float = -Float.greatestFiniteMagnitude
-
-    private func updateGlobalMinMax() {
-        if let min = dataPoints.min(), min < globalMinY {
-            globalMinY = min
-        }
-        if let max = dataPoints.max(), max > globalMaxY {
-            globalMaxY = max
-        }
-    }
-
     override func draw(in ctx: CGContext) {
         guard dataPoints.count > 1 else {
             return
@@ -42,7 +29,13 @@ class CALineGraphLayer: CALayer {
         ctx.setShouldAntialias(true)
 
         let path = CGMutablePath()
-        let yRange = CGFloat(globalMaxY - globalMinY)
+
+        // Compute min and max Y from dataPoints
+        guard let minYValue = dataPoints.min(), let maxYValue = dataPoints.max(),
+              minYValue != maxYValue else {
+            return
+        }
+        let yRange = CGFloat(maxYValue - minYValue)
 
         // Add padding to prevent clipping
         let padding = lineWidth / 2
@@ -50,7 +43,7 @@ class CALineGraphLayer: CALayer {
 
         let points = dataPoints.enumerated().map { index, point -> CGPoint in
             let x = CGFloat(index) / CGFloat(dataPoints.count - 1) * drawingRect.width + drawingRect.minX
-            let y = ((CGFloat(point) - CGFloat(globalMinY)) / yRange * drawingRect.height) + drawingRect.minY
+            let y = ((CGFloat(point) - CGFloat(minYValue)) / yRange * drawingRect.height) + drawingRect.minY
             return CGPoint(x: x, y: y)
         }
 
@@ -78,13 +71,6 @@ class CALineGraphLayer: CALayer {
         ctx.setRenderingIntent(.absoluteColorimetric)
 
         ctx.strokePath()
-    }
-
-    func resetGlobalMinMax() {
-        globalMinY = Float.greatestFiniteMagnitude
-        globalMaxY = -Float.greatestFiniteMagnitude
-        updateGlobalMinMax()
-        setNeedsDisplay()
     }
 }
 
@@ -130,13 +116,9 @@ public class CALineGraphView: NSView {
         graphLayer.contentsScale = window?.screen?.backingScaleFactor ?? 2.0
     }
 
-    public override func layout() {
+    override public func layout() {
         super.layout()
         graphLayer.frame = bounds
-    }
-
-    func resetScale() {
-        graphLayer.resetGlobalMinMax()
     }
 }
 
