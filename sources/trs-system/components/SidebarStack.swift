@@ -46,7 +46,7 @@ public struct SidebarStack<SidebarContent, Content>: View where SidebarContent: 
             GeometryReader { geometry in
                 HStack {
                     Spacer()
-                        .frame(width: sidebarWidth - kSidebarResizeWidth / 2)
+                        .frame(width: sidebarWidth - kSidebarResizeWidth)
 
                     ResizerView(isDragging: $isDraggingSidebar)
                         .frame(width: kSidebarResizeWidth)
