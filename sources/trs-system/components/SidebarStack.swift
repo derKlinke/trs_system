@@ -31,7 +31,8 @@ public struct SidebarStack<SidebarContent, Content>: View where SidebarContent: 
                 .padding(.bottom, .medium)
                 .frame(width: sidebarWidth)
                 .frame(maxHeight: .infinity)
-                .background(DynamicTRSColor.secondaryContentBackground.color)
+//                .background(DynamicTRSColor.secondaryContentBackground.color)
+                .background(.regularMaterial)
 
                 Separator(.vertical, shadow: true)
 
