@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import trs_system
 
 // MARK: - TRSButtonStyle
 public struct TRSButtonStyle: ButtonStyle {
