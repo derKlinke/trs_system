@@ -15,13 +15,13 @@ public enum TRSSizes {
 
     public var rawValue: Double {
         switch self {
-        case .tiny: return -2
-        case .small: return -1
-        case .medium: return 0
-        case .large: return 1
-        case .huge: return 3
-        case .gigantic: return 4
-        case let .custom(level): return level
+        case .tiny: -2
+        case .small: -1
+        case .medium: 0
+        case .large: 1
+        case .huge: 3
+        case .gigantic: 4
+        case let .custom(level): level
         }
     }
 }

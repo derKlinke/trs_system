@@ -57,5 +57,3 @@ final class ColorSwatchSnapshotTests: XCTestCase {
         // XCTAssertEqual(snapshotImage.tiffRepresentation, referenceImage.tiffRepresentation)
     }
 }
-
-

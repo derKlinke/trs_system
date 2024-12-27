@@ -4,12 +4,12 @@ import SwiftUI
 public struct Separator: View {
     @StateObject var colorManager = TRSColorManager.shared
     let shadow: Bool
-    
+
     public enum Mode {
         case vertical
         case horizontal
     }
-    
+
     private let size: TRSSizes
     private let width: CGFloat?
     private let height: CGFloat?
@@ -17,7 +17,7 @@ public struct Separator: View {
     public init(_ mode: Mode, shadow: Bool = false, size: TRSSizes = .tiny) {
         self.shadow = shadow
         self.size = size
-        
+
         if mode == .vertical {
             width = size.value / 10
             height = nil
@@ -32,7 +32,7 @@ public struct Separator: View {
         let sepRectangle = Rectangle()
             .fill(DynamicTRSColor.separator.color)
             .frame(width: width, height: height)
-        
+
         if shadow {
             sepRectangle
                 .shadow(size)

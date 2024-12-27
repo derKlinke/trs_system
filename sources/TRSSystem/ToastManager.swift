@@ -1,10 +1,3 @@
-//
-//  ToastManager.swift
-//  trs-system
-//
-//  Created by Fabian S. Klinke on 2024-07-30.
-//
-
 import SwiftUI
 
 // MARK: - ToastManager

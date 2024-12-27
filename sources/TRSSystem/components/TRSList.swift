@@ -35,8 +35,9 @@ public struct TRSList<Data, ID, Content>: View where Data: RandomAccessCollectio
                 @ViewBuilder content: @escaping (Data.Element) -> Content) {
         self.init(data: data, id: id, selectionMode: .multiple(multipleSelection), content: content)
     }
-    
-    public init(data: Data, id: KeyPath<Data.Element, ID>, @ViewBuilder content: @escaping (Data.Element) -> Content) {
+
+    public init(data: Data, id: KeyPath<Data.Element, ID>,
+                @ViewBuilder content: @escaping (Data.Element) -> Content) {
         self.init(data: data, id: id, selectionMode: .none, content: content)
     }
 
@@ -133,11 +134,11 @@ public struct TRSList<Data, ID, Content>: View where Data: RandomAccessCollectio
     private func isSelected(_ item: Data.Element) -> Bool {
         switch selectionMode {
         case let .single(binding):
-            return binding.wrappedValue == item[keyPath: id]
+            binding.wrappedValue == item[keyPath: id]
         case let .multiple(binding):
-            return binding.wrappedValue.contains(item[keyPath: id])
+            binding.wrappedValue.contains(item[keyPath: id])
         default:
-            return false
+            false
         }
     }
 }

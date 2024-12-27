@@ -1,27 +1,27 @@
-import SwiftUI
-import OSLog
 import Combine
+import OSLog
+import SwiftUI
 
-// TODO: refactor theme colors into this class and have enum for color schemes. we then also need to have enum for 
+// MARK: - TRSColorManager
+// TODO: refactor theme colors into this class and have enum for color schemes. we then also need to have enum for
 //  color name definitions for easy access in font constructors
 public class TRSColorManager: ObservableObject {
     public static let shared = TRSColorManager()
-    
+
     @Published public var colorScheme: ColorScheme = .light
 
     private let logger = Logger(subsystem: "studio.klinke.trs-system", category: "TRSColorManager")
 
     init() {
-        DistributedNotificationCenter.default.addObserver(
-                    self,
-                    selector: #selector(systemAppearanceChanged),
-                    name: NSNotification.Name("AppleInterfaceThemeChangedNotification"),
-                    object: nil
-                )
-        
+        DistributedNotificationCenter.default.addObserver(self,
+                                                          selector: #selector(systemAppearanceChanged),
+                                                          name: NSNotification
+                                                              .Name("AppleInterfaceThemeChangedNotification"),
+                                                          object: nil)
+
         colorScheme = self.getCurrentColorScheme()
     }
-    
+
     @objc
     private func systemAppearanceChanged(notification: Notification) {
         colorScheme = self.getCurrentColorScheme()
@@ -83,31 +83,33 @@ public struct TRSColor: Equatable {
     public func opacity(_ opacity: CGFloat = BASE_OPACITY) -> Self {
         TRSColor(name: self.name, ral: self.ral, hex: self.hex, opacity: opacity)
     }
-    
+
     public func blend(with color: TRSColor, ratio: Double = 0.5) -> Self {
         // convert underlying colors to NSColor and use built in blend function
-        let nsColor = NSColor(red: CGFloat(rgba.red), green: CGFloat(rgba.green), blue: CGFloat(rgba.blue), alpha: CGFloat(rgba.alpha))
-        let nsColor2 = NSColor(red: CGFloat(color.rgba.red), green: CGFloat(color.rgba.green), blue: CGFloat(color.rgba.blue), alpha: CGFloat(color.rgba.alpha))
+        let nsColor = NSColor(red: CGFloat(rgba.red), green: CGFloat(rgba.green), blue: CGFloat(rgba.blue),
+                              alpha: CGFloat(rgba.alpha))
+        let nsColor2 = NSColor(red: CGFloat(color.rgba.red), green: CGFloat(color.rgba.green),
+                               blue: CGFloat(color.rgba.blue), alpha: CGFloat(color.rgba.alpha))
         let blendedColor = nsColor.blended(withFraction: CGFloat(ratio), of: nsColor2)
-        
+
         // convert back to rgba
         let red = Double(blendedColor!.redComponent)
         let green = Double(blendedColor!.greenComponent)
         let blue = Double(blendedColor!.blueComponent)
         let alpha = Double(blendedColor!.alphaComponent)
-        
+
         // convert to hex
         let hex = UInt(red * 255) << 16 + UInt(green * 255) << 8 + UInt(blue * 255)
-        
+
         return TRSColor(name: "\(self.name) x \(color.name)", ral: "n/a", hex: hex, opacity: CGFloat(alpha))
     }
-    
+
     public func blend(with color: TRSColors, ratio: Double = 0.5) -> Self {
         self.blend(with: color.trsColor, ratio: ratio)
     }
 }
 
-// MARK: - TRSColors
+// MARK: - TRSBaseColorDefinitions
 enum TRSBaseColorDefinitions {
     public static let white = TRSColor(name: "WHITE", ral: "n/a", hex: 0xFFFFFF)
     public static let ground = TRSColor(name: "GROUND", ral: "RAL 9003", hex: 0xE9E9E6)
@@ -120,12 +122,13 @@ enum TRSBaseColorDefinitions {
     public static let green = TRSColor(name: "GREEN", ral: "RAL 6011", hex: 0x708C64)
     public static let blue = TRSColor(name: "BLUE", ral: "RAL 5012", hex: 0x0C6BA7)
     public static let yellow = TRSColor(name: "YELLOW", ral: "RAL 1021", hex: 0xF3C100)
-    
+
     public static let none = TRSColor(name: "NONE", ral: "n/a", hex: 0x000000, opacity: 0.0)
-    
+
     public static let shadow = text.opacity(0.1)
 }
 
+// MARK: - TRSColors
 public enum TRSColors: CaseIterable, Identifiable {
     case white
     case ground
@@ -138,27 +141,27 @@ public enum TRSColors: CaseIterable, Identifiable {
     case blue
     case yellow
     case shadow
-    
+
     public var trsColor: TRSColor {
         switch self {
-        case .white: return TRSBaseColorDefinitions.white
-        case .ground: return TRSBaseColorDefinitions.ground
-        case .accent: return TRSBaseColorDefinitions.accent
-        case .secondary: return TRSBaseColorDefinitions.secondary
-        case .text: return TRSBaseColorDefinitions.text
-        case .primary: return TRSBaseColorDefinitions.primary
-        case .red: return TRSBaseColorDefinitions.red
-        case .green: return TRSBaseColorDefinitions.green
-        case .blue: return TRSBaseColorDefinitions.blue
-        case .yellow: return TRSBaseColorDefinitions.yellow
-        case .shadow: return TRSBaseColorDefinitions.shadow
+        case .white: TRSBaseColorDefinitions.white
+        case .ground: TRSBaseColorDefinitions.ground
+        case .accent: TRSBaseColorDefinitions.accent
+        case .secondary: TRSBaseColorDefinitions.secondary
+        case .text: TRSBaseColorDefinitions.text
+        case .primary: TRSBaseColorDefinitions.primary
+        case .red: TRSBaseColorDefinitions.red
+        case .green: TRSBaseColorDefinitions.green
+        case .blue: TRSBaseColorDefinitions.blue
+        case .yellow: TRSBaseColorDefinitions.yellow
+        case .shadow: TRSBaseColorDefinitions.shadow
         }
     }
-    
+
     public var color: Color {
         self.trsColor.color
     }
-    
+
     public var id: String {
         self.trsColor.name
     }
@@ -170,64 +173,61 @@ extension Color {
     }
 }
 
+// MARK: - DynamicTRSColor
 public enum DynamicTRSColor: String, CaseIterable, Identifiable, CustomStringConvertible {
     case text
     case highlightedText
     case secondaryText
     case headline
-    
+
     case warning
     case error
-    
+
     case contentBackground
     case secondaryContentBackground
     case highlightedContentBackground
     case separator
     case uiElement
     case shadow
-    
+
     case clear
-    
+
     private var _darkModeColor: TRSColor {
         switch self {
-        case .text: return TRSBaseColorDefinitions.ground
-        case .highlightedText: return TRSBaseColorDefinitions.white
-        case .secondaryText: return TRSBaseColorDefinitions.secondary
-        case .headline: return TRSBaseColorDefinitions.white
-            
-        case .warning: return TRSBaseColorDefinitions.yellow.opacity(0.1)
-        case .error: return TRSBaseColorDefinitions.red.opacity(0.1)
-            
-        case .contentBackground: return TRSBaseColorDefinitions.text
-        case .secondaryContentBackground: return TRSBaseColorDefinitions.text.opacity(0.8)
-        case .highlightedContentBackground: return TRSBaseColorDefinitions.primary.opacity(0.5)
-        case .separator: return TRSBaseColorDefinitions.text.opacity(0.1)
-        case .uiElement: return TRSBaseColorDefinitions.ground.opacity(0.3)
-        case .shadow: return TRSBaseColorDefinitions.primary
-        case .clear: return TRSBaseColorDefinitions.none
+        case .text: TRSBaseColorDefinitions.ground
+        case .highlightedText: TRSBaseColorDefinitions.white
+        case .secondaryText: TRSBaseColorDefinitions.secondary
+        case .headline: TRSBaseColorDefinitions.white
+        case .warning: TRSBaseColorDefinitions.yellow.opacity(0.1)
+        case .error: TRSBaseColorDefinitions.red.opacity(0.1)
+        case .contentBackground: TRSBaseColorDefinitions.text
+        case .secondaryContentBackground: TRSBaseColorDefinitions.text.opacity(0.8)
+        case .highlightedContentBackground: TRSBaseColorDefinitions.primary.opacity(0.5)
+        case .separator: TRSBaseColorDefinitions.text.opacity(0.1)
+        case .uiElement: TRSBaseColorDefinitions.ground.opacity(0.3)
+        case .shadow: TRSBaseColorDefinitions.primary
+        case .clear: TRSBaseColorDefinitions.none
         }
     }
-    
+
     private var _lightModeColor: TRSColor {
         switch self {
-        case .text: return TRSBaseColorDefinitions.text
-        case .highlightedText: return TRSBaseColorDefinitions.primary
-        case .secondaryText: return TRSBaseColorDefinitions.secondary
-        case .headline: return TRSBaseColorDefinitions.primary
-            
-        case .warning: return TRSBaseColorDefinitions.yellow.opacity()
-        case .error: return TRSBaseColorDefinitions.red.opacity()
-            
-        case .contentBackground: return TRSBaseColorDefinitions.white
-        case .secondaryContentBackground: return TRSBaseColorDefinitions.ground.blend(with: .white, ratio: 0.8)
-        case .highlightedContentBackground: return TRSBaseColorDefinitions.accent.opacity(0.5)
-        case .separator: return TRSBaseColorDefinitions.accent.blend(with: .white)
-        case .uiElement: return TRSBaseColorDefinitions.text.opacity(0.3)
-        case .shadow: return TRSBaseColorDefinitions.text.opacity(0.2)
-        case .clear: return TRSBaseColorDefinitions.none
+        case .text: TRSBaseColorDefinitions.text
+        case .highlightedText: TRSBaseColorDefinitions.primary
+        case .secondaryText: TRSBaseColorDefinitions.secondary
+        case .headline: TRSBaseColorDefinitions.primary
+        case .warning: TRSBaseColorDefinitions.yellow.opacity()
+        case .error: TRSBaseColorDefinitions.red.opacity()
+        case .contentBackground: TRSBaseColorDefinitions.white
+        case .secondaryContentBackground: TRSBaseColorDefinitions.ground.blend(with: .white, ratio: 0.8)
+        case .highlightedContentBackground: TRSBaseColorDefinitions.accent.opacity(0.5)
+        case .separator: TRSBaseColorDefinitions.accent.blend(with: .white)
+        case .uiElement: TRSBaseColorDefinitions.text.opacity(0.3)
+        case .shadow: TRSBaseColorDefinitions.text.opacity(0.2)
+        case .clear: TRSBaseColorDefinitions.none
         }
     }
-    
+
     public var trsColor: TRSColor {
         switch TRSColorManager.shared.colorScheme {
         case .dark: return _darkModeColor
@@ -235,11 +235,11 @@ public enum DynamicTRSColor: String, CaseIterable, Identifiable, CustomStringCon
         @unknown default: return _lightModeColor
         }
     }
-    
+
     public var color: Color {
         trsColor.color
     }
-    
+
     private var _scheme: String {
         switch TRSColorManager.shared.colorScheme {
         case .dark: return "dark"
@@ -247,11 +247,11 @@ public enum DynamicTRSColor: String, CaseIterable, Identifiable, CustomStringCon
         @unknown default: return "unknown"
         }
     }
-    
+
     public var id: String {
         self.rawValue + _scheme
     }
-    
+
     public var description: String {
         "\(self.rawValue) (\(_scheme))"
     }

@@ -14,23 +14,23 @@ final class LongformFontSnapshotTests: XCTestCase {
                 .padding(.top, .medium)
 
             Text(loremIpsum)
-                .font(trs: .body, padding: false,alignment: .left)
+                .font(trs: .body, padding: false, alignment: .left)
 
             Text("The Importance of Fonts")
                 .font(trs: .headline)
 
             Text(loremIpsum)
-                .font(trs: .body, padding: false,alignment: .left)
+                .font(trs: .body, padding: false, alignment: .left)
 
             Text("Mono Font Showcase")
                 .font(trs: .headline)
                 .padding(.top, .medium)
 
             Text("Here's an example of our mono font:")
-                .font(trs: .body, padding: false,alignment: .left)
+                .font(trs: .body, padding: false, alignment: .left)
 
             Text("func helloWorld() {\n    print(\"Hello, World!\")\n}")
-                .font(trs: .mono, padding: false,alignment: .left)
+                .font(trs: .mono, padding: false, alignment: .left)
         }
 
         let hostingView = NSHostingView(rootView: preview)

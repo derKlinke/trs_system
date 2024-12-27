@@ -7,7 +7,7 @@ public struct SidebarStack<SidebarContent, Content>: View where SidebarContent: 
 
     @State private var isDraggingSidebar = false
     @State private var sidebarWidth: CGFloat = 200
-    
+
     @State private var colorManager = TRSColorManager.shared
 
     private let kSidebarResizeWidth: CGFloat = 10
@@ -76,7 +76,7 @@ public struct SidebarStack<SidebarContent, Content>: View where SidebarContent: 
 struct ResizerView: View {
     @Binding var isDragging: Bool
     @State private var isHovering = false
-    
+
     @State private var colorManager = TRSColorManager.shared
 
     var body: some View {

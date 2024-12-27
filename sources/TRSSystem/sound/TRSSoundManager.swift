@@ -32,12 +32,12 @@ public class TRSSoundManager {
     public func play(sound: TRSSound) {
         queue.async {
             self.sounds[sound]!.play()
-            
+
             // TODO: test if this works and how it feels
             NSHapticFeedbackManager.defaultPerformer
                 .perform(NSHapticFeedbackManager.FeedbackPattern.alignment,
                          performanceTime: .default)
-            
+
             // TODO: add automatic variations by pitch shifting
         }
     }
