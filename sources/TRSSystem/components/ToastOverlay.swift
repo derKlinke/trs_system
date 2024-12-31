@@ -10,10 +10,11 @@ public struct ToastOverlay: View {
 
             ForEach(toastManager.toasts) { toast in
                 ToastView(toast: toast)
-                    .animation(.easeInOut(duration: 0.3))
+                    .transition(.move(edge: .top))
             }
             .padding(.bottom, .large)
         }
+        .animation(.easeInOut(duration: 0.3), value: toastManager.toasts)
     }
 }
 
