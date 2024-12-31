@@ -8,11 +8,11 @@ public struct SidebarStack<SidebarContent, Content>: View where SidebarContent: 
     @State private var isDraggingSidebar = false
     @State private var sidebarWidth: CGFloat = 200
 
-    @State private var colorManager = TRSColorManager.shared
-
     private let kSidebarResizeWidth: CGFloat = 10
     private let minSidebarWidth: CGFloat = 100
     private let maxSidebarWidth: CGFloat = 300
+
+    @EnvironmentObject private var themeManager: ThemeManager
 
     public init(@ViewBuilder sidebarContent: @escaping () -> SidebarContent,
                 @ViewBuilder content: @escaping () -> Content) {
@@ -31,8 +31,7 @@ public struct SidebarStack<SidebarContent, Content>: View where SidebarContent: 
                 .padding(.bottom, .medium)
                 .frame(width: sidebarWidth)
                 .frame(maxHeight: .infinity)
-//                .background(DynamicTRSColor.secondaryContentBackground.color)
-                .background(.regularMaterial)
+                .background(Color(themeManager.color(for: .secondaryBackground).color))
 
                 Separator(.vertical, shadow: true)
 
@@ -43,7 +42,7 @@ public struct SidebarStack<SidebarContent, Content>: View where SidebarContent: 
 
             ToastOverlay()
             // Resizer overlay
-            GeometryReader { geometry in
+            GeometryReader { _ in
                 HStack {
                     Spacer()
                         .frame(width: sidebarWidth - kSidebarResizeWidth)
@@ -77,7 +76,7 @@ struct ResizerView: View {
     @Binding var isDragging: Bool
     @State private var isHovering = false
 
-    @State private var colorManager = TRSColorManager.shared
+    @EnvironmentObject private var themeManager: ThemeManager
 
     var body: some View {
         ZStack {
@@ -86,7 +85,7 @@ struct ResizerView: View {
 
             if isDragging || isHovering {
                 Rectangle()
-                    .fill(DynamicTRSColor.uiElement.color)
+                    .fill(Color(themeManager.color(for: .uiElement).color))
                     .frame(width: 4)
                     .frame(height: 50)
                     .roundedClip()

@@ -1,15 +1,27 @@
-//
-//  Shadow.swift
-//  trs-system
-//
-//  Created by Fabian S. Klinke on 2024-07-30.
-//
 import SwiftUI
 
+struct ShadowViewModifier: ViewModifier {
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    let baseSize: TRSSizes
+    let x: CGFloat
+    let y: CGFloat
+    let colorElement: ThemeElement
+    let opacity: Double
+
+    func body(content: Content) -> some View {
+        let resolvedColor = Color(themeManager.color(for: colorElement).color)
+            .opacity(opacity)
+        return content.shadow(baseSize: baseSize.value, color: resolvedColor, x: x, y: y)
+    }
+}
+
 extension View {
-    public func shadow(_ baseSize: TRSSizes, x: CGFloat = 0, y: CGFloat = 0, color: DynamicTRSColor = .shadow,
+
+    public func shadow(_ baseSize: TRSSizes, x: CGFloat = 0, y: CGFloat = 0,
+                       colorElement: ThemeElement = .shadow,
                        opacity: Double = 1) -> some View {
-        shadow(baseSize: baseSize.value, color: color.color.opacity(opacity), x: x, y: y)
+        self.modifier(ShadowViewModifier(baseSize: baseSize, x: x, y: y, colorElement: colorElement, opacity: opacity))
     }
 
     public func shadow(baseSize: CGFloat, color: Color, x: CGFloat = 0, y: CGFloat = 0) -> some View {

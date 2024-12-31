@@ -1,31 +1,26 @@
-//
-//  ButtonStyles.swift
-//  Oscar
-//
-//  Created by Fabian S. Klinke on 2024-06-30.
-//
-
 import SwiftUI
 
 // MARK: - TRSButtonStyle
 public struct TRSButtonStyle: ButtonStyle {
-    var color: Color
+    @EnvironmentObject private var themeManager: ThemeManager
 
-    @StateObject var colorManager = TRSColorManager.shared
+    var colorElement: ThemeElement
 
-    public init(color: DynamicTRSColor = .contentBackground) {
-        self.color = color.color
+    public init(colorElement: ThemeElement = .secondaryBackground) {
+        self.colorElement = colorElement
     }
 
     @ViewBuilder
     public func makeBody(configuration: Configuration) -> some View {
+        let buttonColor = Color(themeManager.color(for: colorElement).color)
+
         let newConf = configuration.label
             .padding(.horizontal, 8)
             .frame(minHeight: .large)
-            .background(color)
+            .background(buttonColor)
             .font(trs: .mono)
 
-        if color != Color.clear {
+        if buttonColor != Color.clear {
             newConf
                 .borderClip(.tiny)
                 .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
@@ -40,26 +35,32 @@ public struct TRSButtonStyle: ButtonStyle {
 }
 
 // MARK: - TRSTextFieldStyle
-public struct TRSTextFieldStyle: TextFieldStyle {
-    @StateObject var colorManager = TRSColorManager.shared
+// FIXME: we need to find a concurrency safe way to do this
+// @MainActor
+// public struct TRSTextFieldStyle: TextFieldStyle {
+//     @EnvironmentObject private var themeManager: ThemeManager
 
-    public init() {}
+//     public init() {}
 
-    public func _body(configuration: TextField<Self._Label>) -> some View {
-        configuration
-            .textFieldStyle(PlainTextFieldStyle())
-            .padding(.horizontal, .small)
-            .frame(minHeight: .large)
-            .background(DynamicTRSColor.contentBackground.color)
-            .foregroundColor(DynamicTRSColor.headline.color)
-            .font(trs: .mono)
-            .borderClip(.tiny)
-    }
-}
+//     public func _body(configuration: TextField<Self._Label>) -> some View {
+//         // Wrap the body content in a MainActor.run block
+//         let backgroundColor = Color(themeManager.color(for: .secondaryBackground).color)
+//         let textColor = Color(themeManager.color(for: .text).color)
+
+//         return configuration
+//             .textFieldStyle(PlainTextFieldStyle())
+//             .padding(.horizontal, .small)
+//             .frame(minHeight: .large)
+//             .background(backgroundColor)
+//             .foregroundColor(textColor)
+//             .font(trs: .mono)
+//             .borderClip(.tiny)
+//     }
+// }
 
 // MARK: - TRSToggleStyle
 public struct TRSToggleStyle: ToggleStyle {
-    @StateObject var colorManager = TRSColorManager.shared
+    @EnvironmentObject private var themeManager: ThemeManager
     @State private var isPressed = false // Make sure to mark as private for encapsulation
 
     public init() {}
@@ -69,13 +70,15 @@ public struct TRSToggleStyle: ToggleStyle {
     public func makeBody(configuration: Configuration) -> some View {
         HStack {
             ZStack {
+                let onColor = Color(themeManager.color(for: .headline).color)
+                let offColor = Color(themeManager.color(for: .secondaryBackground).color)
+
                 Rectangle()
-                    .fill(configuration.isOn ? DynamicTRSColor.text.color : DynamicTRSColor.contentBackground
-                        .color)
+                    .fill(configuration.isOn ? onColor : offColor)
 
                 if configuration.isOn {
                     Image(systemName: "checkmark")
-                        .foregroundColor(DynamicTRSColor.contentBackground.color)
+                        .foregroundColor(offColor)
                         .withFontSpec(toggleFontSpec)
                 }
             }

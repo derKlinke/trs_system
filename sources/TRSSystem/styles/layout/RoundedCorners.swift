@@ -27,16 +27,28 @@ public struct RoundedClip: ViewModifier {
     }
 }
 
+struct BorderClipModifier: ViewModifier {
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    let size: TRSSizes
+
+    func body(content: Content) -> some View {
+        content
+            .roundedClip(size)
+            .overlay {
+                RoundedTRSRectangle(size: size)
+                    .stroke(Color(themeManager.color(for: .separator).color),
+                           lineWidth: size.value / 10)
+            }
+    }
+}
+
 extension View {
     public func roundedClip(_ size: TRSSizes = .medium) -> some View {
         self.modifier(RoundedClip(size: size))
     }
 
     public func borderClip(_ size: TRSSizes = .tiny) -> some View {
-        self.roundedClip(size)
-            .overlay {
-                RoundedTRSRectangle(size: size).stroke(DynamicTRSColor.separator.color,
-                                                       lineWidth: size.value / 10)
-            }
+        self.modifier(BorderClipModifier(size: size))
     }
 }

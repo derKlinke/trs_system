@@ -16,7 +16,7 @@ public struct TRSList<Data, ID, Content>: View where Data: RandomAccessCollectio
     private var selectionMode: TRSSelectionMode<ID>
     @State private var lastSelectedID: ID?
 
-    @StateObject private var colorManager = TRSColorManager.shared
+    @EnvironmentObject private var themeManager: ThemeManager
 
     private init(data: Data, id: KeyPath<Data.Element, ID>, selectionMode: TRSSelectionMode<ID>,
                  @ViewBuilder content: @escaping (Data.Element) -> Content) {
@@ -55,8 +55,8 @@ public struct TRSList<Data, ID, Content>: View where Data: RandomAccessCollectio
                     ForEach(data, id: id) { item in
                         content(item)
                             .padding(.tiny)
-                            .background(isSelected(item) ? DynamicTRSColor.highlightedContentBackground
-                                .color : Color.clear)
+                            .background(isSelected(item) ? Color(themeManager.color(for: .highlightedBackground).color)
+                                : Color.clear)
                             .roundedClip(.tiny)
                             .padding(.vertical, 1)
                             .contentShape(Rectangle())

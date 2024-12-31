@@ -1,15 +1,21 @@
 import AppKit
 
+@MainActor
 public class TRSSoundManager {
     public static let shared = TRSSoundManager()
 
-    public enum TRSSound: String, CaseIterable {
+    public enum TRSSound: String, CaseIterable, Sendable {
         case copy
         case add
         case error
     }
 
-    private var sounds = [TRSSound: NSSound]()
+    struct Sound {
+        let name: TRSSound
+        let sound: NSSound
+    }
+
+    private var sounds: [Sound] = []
 
     let queue = DispatchQueue(label: "TRS Sound Queue", qos: .userInitiated, attributes: .concurrent)
 
@@ -19,7 +25,7 @@ public class TRSSoundManager {
             if let url = Bundle.module.url(forResource: sound.rawValue, withExtension: "wav") {
                 // create sound
                 if let nsSound = NSSound(contentsOf: url, byReference: false) {
-                    sounds[sound] = nsSound
+                    sounds.append(Sound(name: sound, sound: nsSound))
                 } else {
                     fatalError("Could not create sound for: \(sound.rawValue)")
                 }
@@ -30,8 +36,8 @@ public class TRSSoundManager {
     }
 
     public func play(sound: TRSSound) {
-        queue.async {
-            self.sounds[sound]!.play()
+
+            self.sounds.first { $0.name == sound }?.sound.play()
 
             // TODO: test if this works and how it feels
             NSHapticFeedbackManager.defaultPerformer
@@ -39,6 +45,6 @@ public class TRSSoundManager {
                          performanceTime: .default)
 
             // TODO: add automatic variations by pitch shifting
-        }
+
     }
 }

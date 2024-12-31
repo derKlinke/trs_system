@@ -2,6 +2,7 @@ import CoreText
 import OSLog
 import SwiftUI
 
+@MainActor
 public class TRSManager {
     public static let shared = TRSManager()
 

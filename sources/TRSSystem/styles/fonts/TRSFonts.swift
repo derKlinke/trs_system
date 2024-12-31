@@ -1,7 +1,7 @@
 import SwiftUI
 
 // MARK: - TRSFontName
-public enum TRSFontName: String {
+public enum TRSFontName: String, Sendable {
     case sansSerif = "Helvetica Neue"
     case serif = "Hoefler Text"
     case monospace = "Fira Code"
@@ -22,7 +22,7 @@ public enum TRSFontName: String {
 }
 
 // MARK: - TRSFonts
-public enum TRSFonts {
+public enum TRSFonts: Sendable {
     case headline
     case title
     case body
@@ -32,82 +32,74 @@ public enum TRSFonts {
 }
 
 // MARK: - TRSFontAlignment
-public enum TRSFontAlignment {
+public enum TRSFontAlignment: Sendable {
     case left
     case center
     case right
 }
 
 let allFonts: [TRSFonts: TRSFontSpec] = [
-    .caption: TRSFontSpec(name: .monospace, level: -1, bold: false, color: .secondaryText),
+    .caption: TRSFontSpec(name: .monospace, level: -1, bold: false, colorElement: .secondaryText),
     .body: TRSFontSpec(name: .system, level: 0, bold: false),
-    .headline: TRSFontSpec(name: .system, level: 0.3, bold: true, color: .headline),
-    .title: TRSFontSpec(name: .system, level: 1, bold: true, color: .headline),
+    .headline: TRSFontSpec(name: .system, level: 0.3, bold: true, colorElement: .headline),
+    .title: TRSFontSpec(name: .system, level: 1, bold: true, colorElement: .headline),
     .mono: TRSFontSpec(name: .monospace, level: 0, bold: false),
-    .numDisplay: TRSFontSpec(name: .monospace, level: 1, bold: true, color: .headline),
+    .numDisplay: TRSFontSpec(name: .monospace, level: 1, bold: true, colorElement: .headline),
 ]
 
 // MARK: - TRSFontSpec
-struct TRSFontSpec {
+struct TRSFontSpec: Sendable {
     let name: TRSFontName
     let level: CGFloat
     let bold: Bool
-    let color: DynamicTRSColor
+    let colorElement: ThemeElement
 
-    init(name: TRSFontName, level: CGFloat, bold: Bool, color: DynamicTRSColor = .text) {
+    init(name: TRSFontName, level: CGFloat, bold: Bool, colorElement: ThemeElement = .text) {
         self.name = name
         self.level = level
         self.bold = bold
-        self.color = color
+        self.colorElement = colorElement
     }
 }
 
 // MARK: - TRSFontSpecViewModifier
 struct TRSFontSpecViewModifier: ViewModifier {
+    @EnvironmentObject private var themeManager: ThemeManager
+
     let spec: TRSFontSpec
-    let color: Color
     let alignment: TRSFontAlignment
 
-    var desiredLineHeight: CGFloat = 0.0
-    var pointFontSize: CGFloat = 0.0
-    var linespacing: CGFloat = 0.0
-    var topPadding = 0.0
-    var bottomPadding = 0.0
+    let desiredLineHeight: CGFloat
+    let pointFontSize: CGFloat
+    let linespacing: CGFloat
+    let topPadding: CGFloat
+    let bottomPadding: CGFloat
+    let font: Font
 
-    var font: Font?
-
-    init(spec: TRSFontSpec, padding: Bool, color: TRSColors?, alignment: TRSFontAlignment) {
+    init(spec: TRSFontSpec, padding: Bool, alignment: TRSFontAlignment) {
         self.spec = spec
         self.alignment = alignment
-
-        // Initialize color property
-        if let color {
-            self.color = color.color
-        } else {
-            self.color = spec.color.color
-        }
-
-        // Temporary variables to hold intermediate values
-        let fontSizeLevel = fontSize(level: spec.level)
-        let font: NSFont
-
-        // Initialize font property
+        
+        // Initialize with temporary values first
+        let tempFontSize = spec.name.baseFontSize * pow(GOLDEN_RATIO, spec.level)
+        self.desiredLineHeight = tempFontSize * GOLDEN_RATIO
+        
+        // Create the font
         if spec.name == .system {
-            self.font = Font.system(size: fontSizeLevel)
-            font = NSFont.systemFont(ofSize: fontSizeLevel)
+            self.font = Font.system(size: tempFontSize)
+            self.pointFontSize = tempFontSize
         } else {
-            self.font = Font.custom(spec.name.rawValue, size: fontSizeLevel)
-            guard let customFont = NSFont(name: spec.name.rawValue, size: fontSizeLevel) else {
-                fatalError("Font not found")
+            self.font = Font.custom(spec.name.rawValue, size: tempFontSize)
+            if let customFont = NSFont(name: spec.name.rawValue, size: tempFontSize) {
+                self.pointFontSize = customFont.pointSize
+            } else {
+                self.pointFontSize = tempFontSize
             }
-            font = customFont
         }
-
-        // Calculate derived properties
-        self.desiredLineHeight = fontSizeLevel * GOLDEN_RATIO
-        self.pointFontSize = font.pointSize
+        
+        // Calculate derived values
         self.linespacing = self.desiredLineHeight - self.pointFontSize
-
+        
         if padding {
             self.topPadding = (self.linespacing / 3) * 2
             self.bottomPadding = self.linespacing / 3
@@ -119,10 +111,10 @@ struct TRSFontSpecViewModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         _applyAlignment(content
-            .font(self.font!)
+            .font(self.font)
             .bold(spec.bold)
             .lineSpacing(linespacing)
-            .foregroundColor(color))
+            .foregroundColor(Color(themeManager.color(for: spec.colorElement).color)))
     }
 
     @ViewBuilder
@@ -136,27 +128,21 @@ struct TRSFontSpecViewModifier: ViewModifier {
             content.frame(maxWidth: .infinity, alignment: .trailing)
         }
     }
-
-    func fontSize(level: CGFloat) -> CGFloat {
-        spec.name.baseFontSize * pow(GOLDEN_RATIO, level)
-    }
 }
 
 extension View {
-    public func font(trs: TRSFonts, padding: Bool = true, color: TRSColors? = nil,
+    public func font(trs: TRSFonts, padding: Bool = true,
                      alignment: TRSFontAlignment = .center) -> some View {
         if let _font = allFonts[trs] {
-            return self.modifier(TRSFontSpecViewModifier(spec: _font, padding: padding, color: color,
-                                                         alignment: alignment))
+            return self.modifier(TRSFontSpecViewModifier(spec: _font, padding: padding, alignment: alignment))
         } else {
             fatalError("Font not found")
         }
     }
 
-    func withFontSpec(_ spec: TRSFontSpec, padding: Bool = true, color: TRSColors? = nil,
+    func withFontSpec(_ spec: TRSFontSpec, padding: Bool = true,
                       alignment: TRSFontAlignment = .center) -> some View {
-        self.modifier(TRSFontSpecViewModifier(spec: spec, padding: padding, color: color,
-                                              alignment: alignment))
+        self.modifier(TRSFontSpecViewModifier(spec: spec, padding: padding, alignment: alignment))
     }
 }
 

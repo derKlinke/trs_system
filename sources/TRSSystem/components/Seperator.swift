@@ -1,8 +1,9 @@
 import SwiftUI
 
-// MARK: - VerticalSeparator
+// MARK: - Separator
 public struct Separator: View {
-    @StateObject var colorManager = TRSColorManager.shared
+    @EnvironmentObject private var themeManager: ThemeManager
+
     let shadow: Bool
 
     public enum Mode {
@@ -28,9 +29,10 @@ public struct Separator: View {
     }
 
     public var body: some View {
-        // Actual separator
+        let separatorColor = Color(themeManager.color(for: .separator).color)
+
         let sepRectangle = Rectangle()
-            .fill(DynamicTRSColor.separator.color)
+            .fill(separatorColor)
             .frame(width: width, height: height)
 
         if shadow {

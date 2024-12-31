@@ -1,6 +1,6 @@
 import Foundation
 
-public enum TRSSizes {
+public enum TRSSizes: Sendable {
     case tiny
     case small
     case medium

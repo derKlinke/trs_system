@@ -19,6 +19,8 @@ public struct ToastOverlay: View {
 
 // MARK: - ToastView
 struct ToastView: View {
+    @EnvironmentObject private var themeManager: ThemeManager
+
     let toast: Toast
 
     var body: some View {
@@ -34,7 +36,7 @@ struct ToastView: View {
         }
         .padding(.tiny)
         .padding(.horizontal, .small)
-        .background(DynamicTRSColor.contentBackground.color)
+        .background(Color(themeManager.color(for: .secondaryBackground).color))
         .borderClip(.tiny)
         .padding(.medium)
     }
