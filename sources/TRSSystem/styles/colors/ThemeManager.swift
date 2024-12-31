@@ -5,7 +5,7 @@ import SwiftUI
 public final class ThemeManager: ObservableObject {
     @Published private(set) var currentTheme: Theme
     
-    init(theme: Theme = .light) {
+    public init(theme: Theme = .light) {
         self.currentTheme = theme
     }
     
@@ -15,7 +15,7 @@ public final class ThemeManager: ObservableObject {
     }
     
     /// Switch to a specific theme
-    func switchTheme(to theme: Theme) {
+    public func switchTheme(to theme: Theme) {
         withAnimation {
             currentTheme = theme
         }

@@ -1,22 +1,22 @@
 // MARK: - Theme
-struct Theme: Sendable {
-    let name: String
+public struct Theme: Sendable {
+    public let name: String
     private var colors: [ThemeElement: TRSColor]
 
-    init(name: String, colorMapping: [ThemeElement: TRSColor]) {
+    public init(name: String, colorMapping: [ThemeElement: TRSColor]) {
         self.name = name
         self.colors = colorMapping
     }
 
     /// Retrieves the color for a given `ThemeElement`.
-    func color(for element: ThemeElement) -> TRSColor {
+    public func color(for element: ThemeElement) -> TRSColor {
         colors[element] ?? TRSBaseColorDefinitions.white
     }
 }
 
 // MARK: - Predefined Themes
 
-extension Theme {
+public extension Theme {
     static let light = Theme(name: "Light", colorMapping: [
         .background: TRSBaseColorDefinitions.white,
         .text: TRSBaseColorDefinitions.text,
