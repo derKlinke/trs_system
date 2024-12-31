@@ -27,6 +27,7 @@ public struct RoundedClip: ViewModifier {
     }
 }
 
+// MARK: - BorderClipModifier
 struct BorderClipModifier: ViewModifier {
     @EnvironmentObject private var themeManager: ThemeManager
 
@@ -38,7 +39,7 @@ struct BorderClipModifier: ViewModifier {
             .overlay {
                 RoundedTRSRectangle(size: size)
                     .stroke(Color(themeManager.color(for: .separator).color),
-                           lineWidth: size.value / 10)
+                            lineWidth: size.value / 10)
             }
     }
 }

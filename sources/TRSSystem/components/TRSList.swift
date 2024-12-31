@@ -55,7 +55,8 @@ public struct TRSList<Data, ID, Content>: View where Data: RandomAccessCollectio
                     ForEach(data, id: id) { item in
                         content(item)
                             .padding(.tiny)
-                            .background(isSelected(item) ? Color(themeManager.color(for: .highlightedBackground).color)
+                            .background(isSelected(item) ? themeManager
+                                .color(for: .highlightedContentBackground).color
                                 : Color.clear)
                             .roundedClip(.tiny)
                             .padding(.vertical, 1)

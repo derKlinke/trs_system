@@ -31,7 +31,7 @@ public struct SidebarStack<SidebarContent, Content>: View where SidebarContent: 
                 .padding(.bottom, .medium)
                 .frame(width: sidebarWidth)
                 .frame(maxHeight: .infinity)
-                .background(Color(themeManager.color(for: .secondaryBackground).color))
+                .background(.regularMaterial)
 
                 Separator(.vertical, shadow: true)
 
@@ -85,7 +85,7 @@ struct ResizerView: View {
 
             if isDragging || isHovering {
                 Rectangle()
-                    .fill(Color(themeManager.color(for: .uiElement).color))
+                    .fill(themeManager.color(for: .uiElement).color)
                     .frame(width: 4)
                     .frame(height: 50)
                     .roundedClip()

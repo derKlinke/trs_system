@@ -29,7 +29,7 @@ public struct Separator: View {
     }
 
     public var body: some View {
-        let separatorColor = Color(themeManager.color(for: .separator).color)
+        let separatorColor = themeManager.color(for: .separator).color
 
         let sepRectangle = Rectangle()
             .fill(separatorColor)

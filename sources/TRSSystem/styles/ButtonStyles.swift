@@ -6,13 +6,13 @@ public struct TRSButtonStyle: ButtonStyle {
 
     var colorElement: ThemeElement
 
-    public init(colorElement: ThemeElement = .secondaryBackground) {
+    public init(colorElement: ThemeElement = .contentBackground) {
         self.colorElement = colorElement
     }
 
     @ViewBuilder
     public func makeBody(configuration: Configuration) -> some View {
-        let buttonColor = Color(themeManager.color(for: colorElement).color)
+        let buttonColor = themeManager.color(for: colorElement).color
 
         let newConf = configuration.label
             .padding(.horizontal, 8)
@@ -20,7 +20,7 @@ public struct TRSButtonStyle: ButtonStyle {
             .background(buttonColor)
             .font(trs: .mono)
 
-        if buttonColor != Color.clear {
+        if colorElement != .clear {
             newConf
                 .borderClip(.tiny)
                 .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
@@ -31,6 +31,27 @@ public struct TRSButtonStyle: ButtonStyle {
                 .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
                 .animation(.spring(), value: configuration.isPressed)
         }
+    }
+}
+
+// MARK: - TRSTextFieldStyleModifier
+public struct TRSTextFieldStyleModifier: ViewModifier {
+    @EnvironmentObject private var themeManager: ThemeManager
+
+    public func body(content: Content) -> some View {
+        content
+            .textFieldStyle(.plain)
+            .padding(.horizontal, 8)
+            .frame(minHeight: .large)
+            .background(themeManager.color(for: .contentBackground).color)
+            .font(trs: .mono)
+            .borderClip(.tiny)
+    }
+}
+
+extension View {
+    public func trsTextFieldStyle() -> some View {
+        modifier(TRSTextFieldStyleModifier())
     }
 }
 
@@ -46,8 +67,8 @@ public struct TRSToggleStyle: ToggleStyle {
     public func makeBody(configuration: Configuration) -> some View {
         HStack {
             ZStack {
-                let onColor = Color(themeManager.color(for: .headline).color)
-                let offColor = Color(themeManager.color(for: .secondaryBackground).color)
+                let onColor = themeManager.color(for: .headline).color
+                let offColor = themeManager.color(for: .secondaryContentBackground).color
 
                 Rectangle()
                     .fill(configuration.isOn ? onColor : offColor)

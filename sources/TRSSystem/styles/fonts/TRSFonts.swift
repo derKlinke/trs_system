@@ -79,11 +79,11 @@ struct TRSFontSpecViewModifier: ViewModifier {
     init(spec: TRSFontSpec, padding: Bool, alignment: TRSFontAlignment) {
         self.spec = spec
         self.alignment = alignment
-        
+
         // Initialize with temporary values first
         let tempFontSize = spec.name.baseFontSize * pow(GOLDEN_RATIO, spec.level)
         self.desiredLineHeight = tempFontSize * GOLDEN_RATIO
-        
+
         // Create the font
         if spec.name == .system {
             self.font = Font.system(size: tempFontSize)
@@ -96,10 +96,10 @@ struct TRSFontSpecViewModifier: ViewModifier {
                 self.pointFontSize = tempFontSize
             }
         }
-        
+
         // Calculate derived values
         self.linespacing = self.desiredLineHeight - self.pointFontSize
-        
+
         if padding {
             self.topPadding = (self.linespacing / 3) * 2
             self.bottomPadding = self.linespacing / 3

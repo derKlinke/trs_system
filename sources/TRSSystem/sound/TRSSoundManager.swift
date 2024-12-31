@@ -36,15 +36,13 @@ public class TRSSoundManager {
     }
 
     public func play(sound: TRSSound) {
+        self.sounds.first { $0.name == sound }?.sound.play()
 
-            self.sounds.first { $0.name == sound }?.sound.play()
+        // TODO: test if this works and how it feels
+        NSHapticFeedbackManager.defaultPerformer
+            .perform(NSHapticFeedbackManager.FeedbackPattern.alignment,
+                     performanceTime: .default)
 
-            // TODO: test if this works and how it feels
-            NSHapticFeedbackManager.defaultPerformer
-                .perform(NSHapticFeedbackManager.FeedbackPattern.alignment,
-                         performanceTime: .default)
-
-            // TODO: add automatic variations by pitch shifting
-
+        // TODO: add automatic variations by pitch shifting
     }
 }

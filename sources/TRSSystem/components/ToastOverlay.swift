@@ -37,7 +37,7 @@ struct ToastView: View {
         }
         .padding(.tiny)
         .padding(.horizontal, .small)
-        .background(Color(themeManager.color(for: .secondaryBackground).color))
+        .background(themeManager.color(for: .secondaryContentBackground).color)
         .borderClip(.tiny)
         .padding(.medium)
     }

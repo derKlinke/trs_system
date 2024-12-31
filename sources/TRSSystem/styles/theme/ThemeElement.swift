@@ -2,16 +2,18 @@
 
 public enum ThemeElement: String, CaseIterable, Identifiable, Sendable {
     case background
+    case contentBackground
+    case secondaryContentBackground
+    case highlightedContentBackground
     case text
     case headline
     case secondaryText
     case accent
     case separator
+    case success
     case shadow
     case error
     case warning
-    case secondaryBackground
-    case highlightedBackground
     case uiElement
     case clear
 
