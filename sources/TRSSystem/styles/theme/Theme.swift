@@ -25,6 +25,8 @@ extension Theme {
         .secondaryContentBackground: TRSBaseColorDefinitions.ground.blend(with: TRSBaseColorDefinitions.white,
                                                                           ratio: 0.7),
         .highlightedContentBackground: TRSBaseColorDefinitions.accent.withOpacity(0.5),
+        .sidebarBackground: TRSBaseColorDefinitions.ground.blend(with: TRSBaseColorDefinitions.white,
+                                                                 ratio: 0.1).withOpacity(0.3),
 
         // TEXT
         .headline: TRSBaseColorDefinitions.primary,
@@ -46,10 +48,12 @@ extension Theme {
         // BACKGROUNDS
         .background: TRSBaseColorDefinitions.text,
         .contentBackground: TRSBaseColorDefinitions.text.blend(with: TRSBaseColorDefinitions.ground,
-                                                             ratio: 0.06),
+                                                               ratio: 0.06),
         .secondaryContentBackground: TRSBaseColorDefinitions.text.blend(with: TRSBaseColorDefinitions.ground,
-                                                                      ratio: 0.04),
+                                                                        ratio: 0.04),
         .highlightedContentBackground: TRSBaseColorDefinitions.accent.withOpacity(0.3),
+        .sidebarBackground: TRSBaseColorDefinitions.text.blend(with: TRSBaseColorDefinitions.ground,
+                                                               ratio: 0.08).withOpacity(0.3),
 
         // TEXT
         .headline: TRSBaseColorDefinitions.white,

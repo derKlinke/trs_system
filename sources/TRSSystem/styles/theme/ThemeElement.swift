@@ -2,6 +2,7 @@
 
 public enum ThemeElement: String, CaseIterable, Identifiable, Sendable {
     case background
+    case sidebarBackground
     case contentBackground
     case secondaryContentBackground
     case highlightedContentBackground
@@ -16,6 +17,7 @@ public enum ThemeElement: String, CaseIterable, Identifiable, Sendable {
     case warning
     case uiElement
     case clear
+    
 
     public var id: String { rawValue }
 }

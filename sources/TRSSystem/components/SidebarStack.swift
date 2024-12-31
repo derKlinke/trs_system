@@ -31,7 +31,7 @@ public struct SidebarStack<SidebarContent, Content>: View where SidebarContent: 
                 .padding(.bottom, .medium)
                 .frame(width: sidebarWidth)
                 .frame(maxHeight: .infinity)
-                .background(.regularMaterial)
+                .background(themeManager.color(for: .sidebarBackground).color)
 
                 Separator(.vertical, shadow: true)
 
