@@ -30,15 +30,16 @@ public struct RoundedClip: ViewModifier {
 // MARK: - BorderClipModifier
 struct BorderClipModifier: ViewModifier {
     @EnvironmentObject private var themeManager: ThemeManager
-
+    
     let size: TRSSizes
-
+    let color: ThemeElement
+    
     func body(content: Content) -> some View {
         content
             .roundedClip(size)
             .overlay {
                 RoundedTRSRectangle(size: size)
-                    .stroke(Color(themeManager.color(for: .separator).color),
+                    .stroke(themeManager.color(for: color).color,
                             lineWidth: size.value / 10)
             }
     }
@@ -49,7 +50,7 @@ extension View {
         self.modifier(RoundedClip(size: size))
     }
 
-    public func borderClip(_ size: TRSSizes = .tiny) -> some View {
-        self.modifier(BorderClipModifier(size: size))
+    public func borderClip(_ size: TRSSizes = .tiny, color: ThemeElement = .separator) -> some View {
+        self.modifier(BorderClipModifier(size: size, color: color))
     }
 }
