@@ -4,9 +4,36 @@ import SwiftUI
 @MainActor
 public final class ThemeManager: ObservableObject {
     @Published private(set) var currentTheme: Theme
+    @Environment(\.colorScheme) var colorScheme
 
-    public init(theme: Theme = .light) {
+    public init(theme: Theme) {
         self.currentTheme = theme
+    }
+    
+    public init() {
+        #if os(macOS)
+        let systemColorScheme: ColorScheme
+        if #available(macOS 10.14, *) {
+            let appearance = NSApp.effectiveAppearance
+            if appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua {
+                systemColorScheme = .dark
+            } else {
+                systemColorScheme = .light
+            }
+        } else {
+            systemColorScheme = .light
+        }
+        #elseif os(iOS)
+        // For iOS, use UITraitCollection
+        let systemColorScheme: ColorScheme
+        if UITraitCollection.current.userInterfaceStyle == .dark {
+            systemColorScheme = .dark
+        } else {
+            systemColorScheme = .light
+        }
+        #endif
+        
+        self.currentTheme = systemColorScheme == .dark ? .dark : .light
     }
 
     /// Retrieves the current color for a given `ThemeElement`.
@@ -18,6 +45,7 @@ public final class ThemeManager: ObservableObject {
     public func switchTheme(to theme: Theme) {
         withAnimation {
             currentTheme = theme
+            print("switched theme to \(theme.name)")
         }
     }
 
@@ -42,7 +70,5 @@ public final class ThemeManager: ObservableObject {
         @unknown default:
             break
         }
-
-        print("switched theme to \(currentTheme.name)")
     }
 }
