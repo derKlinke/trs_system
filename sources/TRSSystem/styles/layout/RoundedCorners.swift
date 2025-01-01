@@ -30,10 +30,10 @@ public struct RoundedClip: ViewModifier {
 // MARK: - BorderClipModifier
 struct BorderClipModifier: ViewModifier {
     @EnvironmentObject private var themeManager: ThemeManager
-    
+
     let size: TRSSizes
     let color: ThemeElement
-    
+
     func body(content: Content) -> some View {
         content
             .roundedClip(size)

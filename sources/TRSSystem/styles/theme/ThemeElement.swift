@@ -17,7 +17,6 @@ public enum ThemeElement: String, CaseIterable, Identifiable, Sendable {
     case warning
     case uiElement
     case clear
-    
 
     public var id: String { rawValue }
 }

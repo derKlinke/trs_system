@@ -9,30 +9,29 @@ public final class ThemeManager: ObservableObject {
     public init(theme: Theme) {
         self.currentTheme = theme
     }
-    
+
     public init() {
         #if os(macOS)
-        let systemColorScheme: ColorScheme
-        if #available(macOS 10.14, *) {
-            let appearance = NSApp.effectiveAppearance
-            if appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua {
-                systemColorScheme = .dark
+            let systemColorScheme: ColorScheme
+            if #available(macOS 10.14, *) {
+                let appearance = NSApp.effectiveAppearance
+                if appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua {
+                    systemColorScheme = .dark
+                } else {
+                    systemColorScheme = .light
+                }
             } else {
                 systemColorScheme = .light
             }
-        } else {
-            systemColorScheme = .light
-        }
         #elseif os(iOS)
-        // For iOS, use UITraitCollection
-        let systemColorScheme: ColorScheme
-        if UITraitCollection.current.userInterfaceStyle == .dark {
-            systemColorScheme = .dark
-        } else {
-            systemColorScheme = .light
-        }
+            // For iOS, use UITraitCollection
+            let systemColorScheme: ColorScheme = if UITraitCollection.current.userInterfaceStyle == .dark {
+                .dark
+            } else {
+                .light
+            }
         #endif
-        
+
         self.currentTheme = systemColorScheme == .dark ? .dark : .light
     }
 
