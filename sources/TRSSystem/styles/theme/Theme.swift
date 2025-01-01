@@ -36,9 +36,9 @@ extension Theme {
 
         // OTHER
         .shadow: TRSBaseColorDefinitions.text.blend(with: TRSBaseColorDefinitions.ground).withOpacity(0.1),
-        .error: TRSBaseColorDefinitions.red.withOpacity(0.8),
-        .warning: TRSBaseColorDefinitions.yellow.withOpacity(0.8),
-        .success: TRSBaseColorDefinitions.green.withOpacity(0.8),
+        .error: TRSBaseColorDefinitions.red.withOpacity(0.1),
+        .warning: TRSBaseColorDefinitions.yellow.withOpacity(0.1),
+        .success: TRSBaseColorDefinitions.green.withOpacity(0.1),
         .uiElement: TRSBaseColorDefinitions.text.withOpacity(0.3),
         .separator: TRSBaseColorDefinitions.accent.withOpacity(0.5),
         .clear: TRSBaseColorDefinitions.none,
