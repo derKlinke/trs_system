@@ -1,5 +1,5 @@
-import SwiftUI
 import Charts
+import SwiftUI
 
 public struct TRSLineGraph: View {
     private var dataPoints: [Float]
