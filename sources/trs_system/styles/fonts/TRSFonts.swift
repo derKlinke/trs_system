@@ -29,6 +29,7 @@ public enum TRSFonts: Sendable {
     case caption
     case mono
     case numDisplay
+    case subheadline
 }
 
 // MARK: - TRSFontAlignment
@@ -42,6 +43,7 @@ let allFonts: [TRSFonts: TRSFontSpec] = [
     .caption: TRSFontSpec(name: .monospace, level: -1, bold: false, colorElement: .secondaryText),
     .body: TRSFontSpec(name: .system, level: 0, bold: false),
     .headline: TRSFontSpec(name: .system, level: 0.3, bold: true, colorElement: .headline),
+    .subheadline: TRSFontSpec(name: .system, level: 0.1, bold: true, colorElement: .headline),
     .title: TRSFontSpec(name: .system, level: 1, bold: true, colorElement: .headline),
     .mono: TRSFontSpec(name: .monospace, level: 0, bold: false),
     .numDisplay: TRSFontSpec(name: .monospace, level: 1, bold: true, colorElement: .headline),
